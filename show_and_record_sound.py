@@ -16,7 +16,9 @@ The speaker is notified with a brief beep sound at the beginning of each image,
 The outputs of the program are (i) an audio clip for each image and (ii) the 
 ist of words/numbers appearing on the images stored in a text file. 
 
+
 Parisa Supitayakul
+2021-06-09
 
 """
 
