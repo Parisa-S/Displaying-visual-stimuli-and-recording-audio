@@ -3,19 +3,20 @@
 
 @author: Parisa
 
-This program is used for showing and recording the audio clip as mention in section 3.4 
+This program displays visual stimuli (images) involving text or numbers to a 
+person (i.e. "speaker") and records his/her voice into an audio clip, while 
+he/she reads aloud the visual stimuli.
 
-We displayed a slide show to the speaker on the screen of a notebook PC. 
-Each slide contained a text, which can be either a word or a number.
-During displayed each slide, A single audio clip was recorded.
-
-We let the speaker know when the recording is started by play a beep sound
-at the beginning of each slide. After the time limit, the program saves the audio clip
-then the current slide will flush and the next slide(e.g. a word or number) will display
-on the screen automatically.
+The speaker is notified with a brief beep sound at the beginning of each image,
+ which is displayed for a time window of 4 seconds. After the notification, 
+ audio recordings starts and goes on until  the end of the time window. As the 
+ time window is finished, an audio clip is saved.  Subseqently, the  current 
+ image is flushed and the next image (e.g. a word or number) is displayed. 
  
-words used to display in each slide are store in the INFILE text.
+The outputs of the program are (i) an audio clip for each image and (ii) the 
+ist of words/numbers appearing on the images stored in a text file. 
 
+Parisa Supitayakul
 
 """
 
@@ -28,53 +29,63 @@ import numpy as np
 import sounddevice as sd
 from scipy.io.wavfile import write
 
-
-#INFILE options are  country.txt, capital.txt, atomic_numbers_1.txt, atomic_numbers_2.txt
+"""
+INFILE cnotains a list of file names of images to be displayed. The options for 
+INFILE are country.txt, capital.txt, elements. txt.
+"""
 INFILE = "elements.txt" 
 
-OUT_FOLDER = '2020_10_recordings/' + INFILE.replace('.txt','/') 
+OUT_FPATH = 'recordings/' + INFILE.replace('.txt','/') 
 
-TIME_FOR_WORD = 4000 # time for each slide in milisecond
-TIME_FOR_WAIT = 1000 # time for wait before go next slide in milisecond
-FSAMPLING = 44100  # Sample rate
-REC_DURATION = 4 # Duration of recording(sec) ;convert from msec
+DUR_IMAGE = 4000 # display duration of each image (msec)
+DUR_INTERMISSION = 1000 # intermission duration before the next image appears (msec)
+FSAMPLING = 44100  # sampling rate of audio (samples/sec)
+REC_DURATION = 4 # duration of audio recordings (sec)
 
-pointer = 0 #for point the row in txt file
+pointer = 0 # for pointing to the current row in the output text file
 data = []
 myrecording = np.array(data)
 
 
 def setup_window():
-    #Set up the tk window with tex label 
-    #param : pady(pixel) is the distance from top of text label
+    """
+    Set up the tk window with tex label 
+    param: pady (pixel) is the distance from top of the text label
+    """
     global text
     
     main_screen.attributes('-fullscreen', True)
-    text=tk.Label(main_screen,text='SET UP', font="none 40 bold",anchor="center")
+    text = tk.Label(main_screen,text='SET UP', font="none 40 bold",anchor="center")
     text.pack(pady=500)
 
     
 def update_text():
-    #automatic update word on screen
-    #main_screen.after(5000,clear_text) -> run clear_text function after 5000 msec
-    #if the word in the list is finish , destroy the screen and close the program
+    """
+    Automatic update of the image (word/number)
+    
+    Run clear_text function after DUR_IMAGE msec. If all the words in the list 
+    (INFILE) are finished to display, destroy the window, save the output files
+    and terminate the program
+    """
     
     global pointer 
     global myrecording
     
-    print('before show text:'+str(datetime.now()))
+    print('Before show text:'+str(datetime.now()))
     text.configure(text=all_list[pointer]) 
     myrecording = sd.rec(int(REC_DURATION * FSAMPLING), samplerate=FSAMPLING, channels=1)  
-    main_screen.after(TIME_FOR_WORD, clear_text)
+    main_screen.after(DUR_IMAGE, clear_text)
 
         
 def clear_text():
-    #export audio file and clear the previous word to blank label
-    #wait 10 msec and run play sound
+    """
+    Export audio file and display a blank screen for 10 msec.
+    After the blank screen, run play_sound
+    """
     
     global pointer 
     
-    write(OUT_FOLDER + str(all_list[pointer])+'.wav', FSAMPLING, myrecording)
+    write(OUT_FPATH + str(all_list[pointer])+'.wav', FSAMPLING, myrecording)
     text.configure(text=' ')
     pointer +=1
     
@@ -84,13 +95,14 @@ def clear_text():
         main_screen.destroy()
         
 def play_sound():
-    #go to update the next text after TIME_FOR_WAIT(1000 msec)
-    #during TIME_FOR_WAIT (1000 msec) waiting ,play beep sound for 900 msec 500Hz
+    """
+    For DUR_INTERMISSION, play beep sound (for 900 msec at 500Hz)
+    """
     
-    print('before play sound:'+str(datetime.now()))
-    main_screen.after(TIME_FOR_WAIT, update_text)
+    print('Before play sound:'+str(datetime.now()))
+    main_screen.after(DUR_INTERMISSION, update_text)
     winsound.Beep(500,900)
-    print('after play sound:'+str(datetime.now()))
+    print('After play sound:'+str(datetime.now()))
 
     
 def exit(event):
@@ -112,3 +124,4 @@ if __name__ == '__main__':
     play_sound()
     main_screen.bind("<Escape>", exit)
     main_screen.mainloop()
+
