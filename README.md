@@ -1,4 +1,4 @@
-# audio-stimuli
+# Displaying visual stimuli and recording audio
 
 This repository contains the custom codes and resources for building the audio stimuli used in the experiments reported in our article.  The implementation is done in Python 3.5.2 and it deploys several functions from the package pydub 0.25.1.
 
