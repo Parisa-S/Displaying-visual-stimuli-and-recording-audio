@@ -13,5 +13,5 @@ list of words/numbers appearing on the images stored in a text file.
 
 **Post-processing of raw audio recordings**
 
-The program silence_detect.py receives a list of raw audio recordings and distinguishes the voice and silent segments in each of them. It then builds an audio clip by appending a recording (i.e.\ country_name) with another one (i.e. capital_name) by padding a brief artificial silent segment in between. It repeats this sequence 
+The program silence_detect.py receives a list of raw audio recordings and distinguishes the voice and silent segments in each of them. It then builds an audio clip by appending a recording (i.e. country_name) with another one (i.e. capital_name) by padding a brief artificial silent segment in between. It repeats this sequence 
 once more, appends to other silent segments at the beginning and at the end, and finally stores the result into an audio clip. 
